@@ -57,9 +57,7 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="images\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
     <Import Include="System" />
@@ -85,6 +83,29 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="css\normalize.css" />
+    <Content Include="images\10betN.png" />
+    <Content Include="images\10betS.png" />
+    <Content Include="images\15betN.png" />
+    <Content Include="images\15betS.png" />
+    <Content Include="images\5betN.png" />
+    <Content Include="images\5betS.png" />
+    <Content Include="images\bell.png" />
+    <Content Include="images\blank.png" />
+    <Content Include="images\bomb.png" />
+    <Content Include="images\bunny.png" />
+    <Content Include="images\closeN.png" />
+    <Content Include="images\closeS.png" />
+    <Content Include="images\fishbone.png" />
+    <Content Include="images\handleN.png" />
+    <Content Include="images\heart.png" />
+    <Content Include="images\mainSlot.png" />
+    <Content Include="images\resetN.png" />
+    <Content Include="images\resetS.png" />
+    <Content Include="images\shrine.png" />
+    <Content Include="images\skull.png" />
+    <Content Include="images\SPINn.png" />
+    <Content Include="images\spinS.png" />
+    <Content Include="js\easeljs-0.7.1.min.js" />
     <Content Include="js\main.js" />
     <Content Include="main.html" />
     <Content Include="Web.config" />
