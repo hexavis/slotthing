@@ -82,6 +82,7 @@
     <Import Include="System.Web.UI.HtmlControls" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="css\font.css" />
     <Content Include="css\normalize.css" />
     <Content Include="images\10betN.png" />
     <Content Include="images\10betS.png" />
@@ -140,6 +141,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="edunline.fon" />
+    <Content Include="edunline.ttf" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>

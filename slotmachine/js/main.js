@@ -43,6 +43,14 @@ var heart;
 var blank;
 //main bg
 var mainSlot;
+//text
+var jackpotText;
+var playerPotText;
+var winningText;
+//reels
+var reel1;
+var reel2;
+var reel3;
 
     function init() {
         canvas = document.getElementById("slotDisplay");
@@ -125,22 +133,56 @@ var mainSlot;
         stage.addChild(spinN);
         spinN.x = 520;
         spinN.y = 535;
-        //===============================add event listener
+        spinN.addEventListener("click", spin);
+        spinN.addEventListener("mouseover", spinOrange);
+        spinN.addEventListener("mouseout", removeSpinOrange);
+
         resetN = new createjs.Bitmap("../images/resetN.png");
         stage.addChild(resetN);
         resetN.x = 515;
         resetN.y = 625;
-        //===============================add event listener
+        resetN.addEventListener("click", reset);
+        resetN.addEventListener("mouseover", resetOrange);
+        resetN.addEventListener("mouseout", removeResetOrange);
+
         closeN = new createjs.Bitmap("../images/closeN.png");
         stage.addChild(closeN);
         closeN.x = resetN.image.width+resetN.x+5;
         closeN.y = 625;
-        //===============================add event listener
+        closeN.addEventListener("click", close);
+        closeN.addEventListener("mouseover", closeOrange);
+        closeN.addEventListener("mouseout", removeCloseOrange);
+
         handleN = new createjs.Bitmap("../images/handleN.png");
         stage.addChild(handleN);
         handleN.x = 700;
         handleN.y = 200;
-        //===============================add event listener
+        handleN.addEventListener("click", spin);
+
+        //add the basic text
+        jackpotText = new createjs.Text();
+        jackpotText.font = "50px Monoton";
+        jackpotText.color = "#ffffff";
+        jackpotText.text = "+" + jackpot + "+";
+        stage.addChild(jackpotText);
+        jackpotText.x = 250;
+        jackpotText.y = 35;
+
+        playerPotText = new createjs.Text();
+        playerPotText.font = "40px Monoton";
+        playerPotText.color = "#ffffff";
+        playerPotText.text = playerMoney;
+        stage.addChild(playerPotText);
+        playerPotText.x = 80;
+        playerPotText.y = 615;
+
+        winningText = new createjs.Text();
+        winningText.font = "40px Monoton";
+        winningText.color = "#ffffff";
+        winningText.text = winnings;
+        stage.addChild(winningText);
+        winningText.x = 245;
+        winningText.y = 130;
     }
 
 //-----------------------------------------------------------//
@@ -191,10 +233,119 @@ var mainSlot;
         }   
     }
 
-  
+    function reset(e) {
+       
+        resetFruitTally();
+        resetAll();
+        init();
+    }
+
+    function resetOrange(e){
+        resetS = new createjs.Bitmap("../images/resetS.png");
+        stage.addChild(resetS);
+        resetS.x = 515;
+        resetS.y = 625;
+        resetS.addEventListener("click", reset);
+    }
+
+    function removeResetOrange(e){
+        stage.removeChild(resetS);
+    }
+
+    function spinOrange(e) {
+        spinS = new createjs.Bitmap("../images/spinS.png");
+        stage.addChild(spinS);
+        spinS.x = 520;
+        spinS.y = 535;
+        spinS.addEventListener("click", spin);
+    }
+
+    function removeSpinOrange(e) {
+        stage.removeChild(spinS);
+    }
+
+    function closeOrange(e) {
+        closeS = new createjs.Bitmap("../images/closeS.png");
+        stage.addChild(closeS);
+        closeS.x = resetN.image.width + resetN.x + 5;
+        closeS.y = 625;
+        closeS.addEventListener("click", close);
+    }
+
+    function removeCloseOrange(e) {
+        stage.removeChild(closeS);
+    }
+
+    function close(e) {
+        window.open('', '_parent', '');
+        window.close();
+        window.open('', '_self', ''); window.close();
+    }
+
 //-----------------------------------------------------------//
 //=========             Tom's code             ==============//
 //-----------------------------------------------------------// 
+
+
+    /* When the player clicks the spin button the game kicks off */
+    function spin(e) {
+        //    playerBet = $("div#betEntry>input").val();
+        if (playerBet == 0) {
+            alert("You must place a bet before you can spin!");
+        }
+        else {
+            if (playerMoney == 0) {
+                if (confirm("You ran out of Money! \nDo you want to play again?")) {
+                    resetAll();
+                    showPlayerStats();
+                }
+            }
+            else if (playerBet > playerMoney) {
+                alert("You don't have enough Money to place that bet.");
+            }
+            else if (playerBet < 0) {
+                alert("All bets must be a positive $ amount.");
+            }
+            else if (playerBet <= playerMoney) {
+                spinResult = Reels();
+
+                if (stage.contains(reel1) && stage.contains(reel2) && stage.contains(reel3)) {
+                    stage.removeChild(reel1);
+                    stage.removeChild(reel2);
+                    stage.removeChild(reel3);
+                }
+
+                reel1 = new createjs.Bitmap(spinResult[0]);
+                reel1.x = 85;
+                reel1.y = 250;
+                spinResult[1].x = 600;
+                stage.addChild(reel1);
+
+                reel2 = new createjs.Bitmap(spinResult[1]);
+                reel2.x = 290;
+                reel2.y = 250;
+                stage.addChild(reel2);
+
+                reel3 = new createjs.Bitmap(spinResult[1]);
+                reel3.x = 495;
+                reel3.y = 250;
+                stage.addChild(reel3);
+
+                determineWinnings();
+                turn++;
+                showPlayerStats();
+            }
+            else {
+                alert("Please enter a valid bet amount");
+            }
+
+            //redo the basic text
+            jackpotText.text = "+" + jackpot + "+";
+            playerPotText.text = playerMoney;
+            stage.update;
+        }
+    }
+
 
 /* Utility function to show Player Stats */
 function showPlayerStats() {
@@ -247,7 +398,7 @@ function checkJackPot() {
 /* Utility function to show a win message and increase player money */
 function showWinMessage() {
     playerMoney += winnings;
-    $("div#winOrLose>p").text("You Won: $" + winnings);
+    winningText.text = "You Won: $" + winnings;
     resetFruitTally();
     checkJackPot();
 }
@@ -255,7 +406,8 @@ function showWinMessage() {
 /* Utility function to show a loss message and reduce player money */
 function showLossMessage() {
     playerMoney -= playerBet;
-    $("div#winOrLose>p").text("You Lost!");
+    jackpot += playerBet;
+    winningText.text = "You Lost!";
     resetFruitTally();
 }
 
@@ -272,42 +424,42 @@ function checkRange(value, lowerBounds, upperBounds) {
 /* When this function is called it determines the betLine results.
 e.g. Bar - Orange - Banana */
 function Reels() {
-    var betLine = [" ", " ", " "];
+    var betLine = [];
     var outCome = [0, 0, 0];
 
     for (var spin = 0; spin < 3; spin++) {
         outCome[spin] = Math.floor((Math.random() * 65) + 1);
         switch (outCome[spin]) {
             case checkRange(outCome[spin], 1, 27):  // 41.5% probability
-                betLine[spin] = "blank";
+                betLine[spin] = "../images/blank.png";
                 blanks++;
                 break;
             case checkRange(outCome[spin], 28, 37): // 15.4% probability
-                betLine[spin] = "Grapes";
+                betLine[spin] = "../images/heart.png";
                 grapes++;
                 break;
             case checkRange(outCome[spin], 38, 46): // 13.8% probability
-                betLine[spin] = "Banana";
+                betLine[spin] = "../images/fishbone.png";
                 bananas++;
                 break;
             case checkRange(outCome[spin], 47, 54): // 12.3% probability
-                betLine[spin] = "Orange";
+                betLine[spin] = "../images/skull.png";
                 oranges++;
                 break;
             case checkRange(outCome[spin], 55, 59): //  7.7% probability
-                betLine[spin] = "Cherry";
+                betLine[spin] = "../images/bunny.png";
                 cherries++;
                 break;
             case checkRange(outCome[spin], 60, 62): //  4.6% probability
-                betLine[spin] = "Bar";
+                betLine[spin] = "../images/shrine.png";
                 bars++;
                 break;
             case checkRange(outCome[spin], 63, 64): //  3.1% probability
-                betLine[spin] = "Bell";
+                betLine[spin] = "../images/bell.png";
                 bells++;
                 break;
             case checkRange(outCome[spin], 65, 65): //  1.5% probability
-                betLine[spin] = "Seven";
+                betLine[spin] = "../images/bomb.png";
                 sevens++;
                 break;
         }
@@ -376,32 +528,3 @@ function determineWinnings() {
 
 }
 
-/* When the player clicks the spin button the game kicks off */
-$("#spinButton").click(function () {
-//    playerBet = $("div#betEntry>input").val();
-
-    if (playerMoney == 0) {
-        if (confirm("You ran out of Money! \nDo you want to play again?")) {
-            resetAll();
-            showPlayerStats();
-        }
-    }
-    else if (playerBet > playerMoney) {
-        alert("You don't have enough Money to place that bet.");
-    }
-    else if (playerBet < 0) {
-        alert("All bets must be a positive $ amount.");
-    }
-    else if (playerBet <= playerMoney) {
-        spinResult = Reels();
-        fruits = spinResult[0] + " - " + spinResult[1] + " - " + spinResult[2];
-        $("div#result>p").text(fruits);
-        determineWinnings();
-        turn++;
-        showPlayerStats();
-    }
-    else {
-        alert("Please enter a valid bet amount");
-    }
-
-});
