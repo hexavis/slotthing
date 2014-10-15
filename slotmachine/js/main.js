@@ -326,7 +326,7 @@ var reel3;
                 reel2.y = 250;
                 stage.addChild(reel2);
 
-                reel3 = new createjs.Bitmap(spinResult[1]);
+                reel3 = new createjs.Bitmap(spinResult[2]);
                 reel3.x = 495;
                 reel3.y = 250;
                 stage.addChild(reel3);
