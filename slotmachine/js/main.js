@@ -69,7 +69,7 @@ var reel1;
 var reel2;
 var reel3;
 
-    function init() {
+function init() {
         canvas = document.getElementById("slotDisplay");
         stage = new createjs.Stage(canvas); //set the stage to be the canvas
         stage.enableMouseOver(); //Enable mouse over to allow functionality
@@ -100,13 +100,13 @@ var reel3;
                      { src: "../slotmachine/images/skull.png" },
                      //main
                     { src: "../slotmachine/images/mainSlot.png" }];//setup preload images at the start for the slot machine
-        preLoad.on("Load Files", fileLoad, this); //Called when file loads
-        preLoad.on("File Load Complete", completeFileLoad, this); //Called when file completes
+        preLoad.on("fileload", loadFiles, this); //Called when file loads
+        preLoad.on("complete", completeFileLoad, this); //Called when file completes
         //can use preloader to create a loading bar 
         preLoad.loadManifest(images); //Load the images
     }
 
-    function fileLoad(event) {
+    function loadFiles(event) {
         console.log(" files loaded.");
     }
 
@@ -220,7 +220,7 @@ var reel3;
         reel3.x = 495;
         reel3.y = 250;
 
-        
+       
     }
 
 //-----------------------------------------------------------//
