@@ -1,4 +1,20 @@
 ﻿/// <reference path="jquery.js" />
+
+/**
+* Author : Jacqueline Richard
+* Javascript file for main.html
+* This javascript does everything needed for the slot machine to work. UI and Math codes
+* Last Modified by : Jacqueline Richard
+* Date Last Modified :  Oct 30th, 2014
+* Revision History: 1.0 Initial Commit, Oct 15, 2014
+*                   1.1 Main Functions
+*                   1.2 Canvas, images, event listeners
+*                   1.3 final functionality
+*                   1.4 Small fix
+*                   2.0 Final pieces of the puzzle Oct 30, 2014
+*/
+
+
 var playerMoney = 1000;
 var winnings = 0;
 var jackpot = 5000;
@@ -33,6 +49,7 @@ var spinN;
 var spinS;
 var handleN;
 //image reel
+var spinReel;
 var bunny;
 var bomb;
 var fishbone;
@@ -54,82 +71,86 @@ var reel3;
 
     function init() {
         canvas = document.getElementById("slotDisplay");
-        stage = new createjs.Stage(canvas); //Set the canvas
-        stage.enableMouseOver(); //Enable mouse over
-        queue = new createjs.LoadQueue(false);
-        queue.installPlugin(createjs.Sound);
-        var manifest = 
-                    [{ src: "../images/10betN.png" },
-                     { src: "../images/10betS.png" },
-                     { src: "../images/15betN.png" },
-                     { src: "../images/15betS.png" },
-                     { src: "../images/5betN.png" },
-                     { src: "../images/5betS.png" },
-                     { src: "../images/closeN.png" },
-                     { src: "../images/closeS.png" },
-                     { src: "../images/handleN.png" },
-                     { src: "../images/resetN.png" },
-                     { src: "../images/resetS.png" },
-                     { src: "../images/SPINn.png" },
-                     { src: "../images/spinS.png" },
+        stage = new createjs.Stage(canvas); //set the stage to be the canvas
+        stage.enableMouseOver(); //Enable mouse over to allow functionality
+        preLoad = new createjs.LoadQueue(false);
+        var images = 
+                    [{ src: "../slotmachine/images/10betN.png" },
+                     { src: "../slotmachine/images/10betS.png" },
+                     { src: "../slotmachine/images/15betN.png" },
+                     { src: "../slotmachine/images/15betS.png" },
+                     { src: "../slotmachine/images/5betN.png" },
+                     { src: "../slotmachine/images/5betS.png" },
+                     { src: "../slotmachine/images/closeN.png" },
+                     { src: "../slotmachine/images/closeS.png" },
+                     { src: "../slotmachine/images/handleN.png" },
+                     { src: "../slotmachine/images/resetN.png" },
+                     { src: "../slotmachine/images/resetS.png" },
+                     { src: "../slotmachine/images/SPINn.png" },
+                     { src: "../slotmachine/images/spinS.png" },
                      //the reel images
-                     { src: "../images/bell.png" },
-                     { src: "../images/blank.png" },
-                     { src: "../images/bomb.png" },
-                     { src: "../images/bunny.png" },
-                     { src: "../images/fishbone.png" },
-                     { src: "../images/heart.png" },
-                     { src: "../images/shrine.png" },
-                     { src: "../images/skull.png" },
+                     { src: "../slotmachine/images/spinReel.png" },
+                     { src: "../slotmachine/images/bell.png" },
+                     { src: "../slotmachine/images/blank.png" },
+                     { src: "../slotmachine/images/bomb.png" },
+                     { src: "../slotmachine/images/bunny.png" },
+                     { src: "../slotmachine/images/fishbone.png" },
+                     { src: "../slotmachine/images/heart.png" },
+                     { src: "../slotmachine/images/shrine.png" },
+                     { src: "../slotmachine/images/skull.png" },
                      //main
-                    { src: "../images/mainSlot.png" }];//load all the images at the start for the slot machine
-        queue.on("fileload", handleFileLoad, this); //Called when file loads
-        queue.on("complete", handleComplete, this); //Called when file completes
-        queue.loadManifest(manifest); //Load the manifest
+                    { src: "../slotmachine/images/mainSlot.png" }];//setup preload images at the start for the slot machine
+        preLoad.on("Load Files", fileLoad, this); //Called when file loads
+        preLoad.on("File Load Complete", completeFileLoad, this); //Called when file completes
+        //can use preloader to create a loading bar 
+        preLoad.loadManifest(images); //Load the images
     }
 
-    function handleFileLoad(event) {
-        console.log("All files loaded.");
+    function fileLoad(event) {
+        console.log(" files loaded.");
     }
 
     //On load complete
-    function handleComplete(event) {
-        createjs.Ticker.addEventListener("tick", tickHandler); //Run tick handler for animations
-        createjs.Ticker.setFPS(60); //Set FPS higher
+    function completeFileLoad(event) {
+        createjs.Ticker.addEventListener("tick", ticker); //ticker to update the stage continously. allows for slot machine to work.
+        createjs.Ticker.setFPS(60); //ticker fps.
         //load the slotmachine
         loadMain();
     }
 
     function loadMain() {
+        console.log("beginning screen");
+        stage.removeAllChildren();
         //put all the main things on the screen
         //add main image
-        mainSlot = new createjs.Bitmap("../images/mainSlot.png");
-        stage.addChild(mainSlot);
+        var mainSlot = new createjs.Bitmap("../slotmachine/images/mainSlot.png");
+        this.stage.addChild(mainSlot);
         mainSlot.x = 0;
         mainSlot.y = 0;
+
         //add the buttons
-        bet5N = new createjs.Bitmap("../images/5betN.png");
+        bet5N = new createjs.Bitmap("../slotmachine/images/5betN.png");
         stage.addChild(bet5N);
         bet5N.name = "five";
         bet5N.x = 60;
         bet5N.y = 530;
         bet5N.addEventListener("click", setBet);
 
-        bet10N = new createjs.Bitmap("../images/10betN.png");
+        bet10N = new createjs.Bitmap("../slotmachine/images/10betN.png");
         stage.addChild(bet10N);
         bet10N.name = "ten";
         bet10N.x = bet5N.x+bet5N.image.width+5;
         bet10N.y = 530;
         bet10N.addEventListener("click", setBet);
 
-        bet15N = new createjs.Bitmap("../images/15betN.png");
+        bet15N = new createjs.Bitmap("../slotmachine/images/15betN.png");
         stage.addChild(bet15N);
         bet15N.name = "fifteen";
         bet15N.x = bet10N.x + bet10N.image.width + 5;
         bet15N.y = 530;
         bet15N.addEventListener("click", setBet);
 
-        spinN = new createjs.Bitmap("../images/SPINn.png");
+        spinN = new createjs.Bitmap("../slotmachine/images/SPINn.png");
         stage.addChild(spinN);
         spinN.x = 520;
         spinN.y = 535;
@@ -137,7 +158,7 @@ var reel3;
         spinN.addEventListener("mouseover", spinOrange);
         spinN.addEventListener("mouseout", removeSpinOrange);
 
-        resetN = new createjs.Bitmap("../images/resetN.png");
+        resetN = new createjs.Bitmap("../slotmachine/images/resetN.png");
         stage.addChild(resetN);
         resetN.x = 515;
         resetN.y = 625;
@@ -145,7 +166,7 @@ var reel3;
         resetN.addEventListener("mouseover", resetOrange);
         resetN.addEventListener("mouseout", removeResetOrange);
 
-        closeN = new createjs.Bitmap("../images/closeN.png");
+        closeN = new createjs.Bitmap("../slotmachine/images/closeN.png");
         stage.addChild(closeN);
         closeN.x = resetN.image.width+resetN.x+5;
         closeN.y = 625;
@@ -153,7 +174,7 @@ var reel3;
         closeN.addEventListener("mouseover", closeOrange);
         closeN.addEventListener("mouseout", removeCloseOrange);
 
-        handleN = new createjs.Bitmap("../images/handleN.png");
+        handleN = new createjs.Bitmap("../slotmachine/images/handleN.png");
         stage.addChild(handleN);
         handleN.x = 700;
         handleN.y = 200;
@@ -183,13 +204,30 @@ var reel3;
         stage.addChild(winningText);
         winningText.x = 245;
         winningText.y = 130;
+
+        reel1 = new createjs.Bitmap("../slotmachine/images/spinReel.png");
+        stage.addChild(reel1);
+        reel1.x = 85;
+        reel1.y = 250;
+
+        reel2 = new createjs.Bitmap("../slotmachine/images/spinReel.png");
+        stage.addChild(reel2);
+        reel2.x = 290;
+        reel2.y = 250;
+
+        reel3 = new createjs.Bitmap("../slotmachine/images/spinReel.png");
+        stage.addChild(reel3);
+        reel3.x = 495;
+        reel3.y = 250;
+
+        
     }
 
 //-----------------------------------------------------------//
 //=========         Event Listeners            ==============//
 //-----------------------------------------------------------//
-    //Ticker to control all animations on the stage
-    function tickHandler(e) {
+    //Ticker to allow the stage to be continously updated. :D
+    function ticker(e) {
         stage.update();
     }
 
@@ -210,21 +248,21 @@ var reel3;
         switch (e.currentTarget.name) {
             case ("five"):
                 playerBet = 5;
-                bet5S = new createjs.Bitmap("../images/5betS.png");
+                bet5S = new createjs.Bitmap("../slotmachine/images/5betS.png");
                 stage.addChild(bet5S);
                 bet5S.x = 60;
                 bet5S.y = 530;
                 break;
             case ("ten"):
                 playerBet = 10;
-                bet10S = new createjs.Bitmap("../images/10betS.png");
+                bet10S = new createjs.Bitmap("../slotmachine/images/10betS.png");
                 stage.addChild(bet10S);
                 bet10S.x = bet5N.x + bet5N.image.width + 5;
                 bet10S.y = 530;
                 break;
             case ("fifteen"):
                 playerBet = 15;
-                bet15S = new createjs.Bitmap("../images/15betS.png");
+                bet15S = new createjs.Bitmap("../slotmachine/images/15betS.png");
                 stage.addChild(bet15S);
                 bet15S.name = "fifteen";
                 bet15S.x = bet10N.x + bet10N.image.width + 5;
@@ -241,7 +279,7 @@ var reel3;
     }
 
     function resetOrange(e){
-        resetS = new createjs.Bitmap("../images/resetS.png");
+        resetS = new createjs.Bitmap("../slotmachine/images/resetS.png");
         stage.addChild(resetS);
         resetS.x = 515;
         resetS.y = 625;
@@ -253,7 +291,7 @@ var reel3;
     }
 
     function spinOrange(e) {
-        spinS = new createjs.Bitmap("../images/spinS.png");
+        spinS = new createjs.Bitmap("../slotmachine/images/spinS.png");
         stage.addChild(spinS);
         spinS.x = 520;
         spinS.y = 535;
@@ -265,7 +303,7 @@ var reel3;
     }
 
     function closeOrange(e) {
-        closeS = new createjs.Bitmap("../images/closeS.png");
+        closeS = new createjs.Bitmap("../slotmachine/images/closeS.png");
         stage.addChild(closeS);
         closeS.x = resetN.image.width + resetN.x + 5;
         closeS.y = 625;
@@ -280,16 +318,16 @@ var reel3;
         window.open('', '_parent', '');
         window.close();
         window.open('', '_self', ''); window.close();
+        window.location.replace("https://www.google.ca/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=slotmachines");
     }
 
 //-----------------------------------------------------------//
-//=========             Tom's code             ==============//
+//=========      Edited Tom's code             ==============//
 //-----------------------------------------------------------// 
 
 
     /* When the player clicks the spin button the game kicks off */
     function spin(e) {
-        //    playerBet = $("div#betEntry>input").val();
         if (playerBet == 0) {
             alert("You must place a bet before you can spin!");
         }
@@ -315,10 +353,10 @@ var reel3;
                     stage.removeChild(reel3);
                 }
 
+                //load the images onto the reel
                 reel1 = new createjs.Bitmap(spinResult[0]);
                 reel1.x = 85;
                 reel1.y = 250;
-                spinResult[1].x = 600;
                 stage.addChild(reel1);
 
                 reel2 = new createjs.Bitmap(spinResult[1]);
@@ -360,14 +398,14 @@ function showPlayerStats() {
 
 /* Utility function to reset all fruit tallies */
 function resetFruitTally() {
-    grapes = 0;
-    bananas = 0;
-    oranges = 0;
-    cherries = 0;
-    bars = 0;
-    bells = 0;
-    sevens = 0;
-    blanks = 0;
+    grapes = 0; // hearts
+    bananas = 0; // fishbone
+    oranges = 0; //skulls
+    cherries = 0; // bunnies
+    bars = 0; // shrines
+    bells = 0; // bells
+    sevens = 0; // bombs
+    blanks = 0; // blanks
 }
 
 /* Utility function to reset the player stats */
@@ -424,42 +462,42 @@ function checkRange(value, lowerBounds, upperBounds) {
 /* When this function is called it determines the betLine results.
 e.g. Bar - Orange - Banana */
 function Reels() {
-    var betLine = [];
+    var betLine = [" ", " ", " "];
     var outCome = [0, 0, 0];
 
     for (var spin = 0; spin < 3; spin++) {
         outCome[spin] = Math.floor((Math.random() * 65) + 1);
         switch (outCome[spin]) {
             case checkRange(outCome[spin], 1, 27):  // 41.5% probability
-                betLine[spin] = "../images/blank.png";
+                betLine[spin] = "../slotmachine/images/blank.png";
                 blanks++;
                 break;
             case checkRange(outCome[spin], 28, 37): // 15.4% probability
-                betLine[spin] = "../images/heart.png";
+                betLine[spin] = "../slotmachine/images/heart.png";
                 grapes++;
                 break;
             case checkRange(outCome[spin], 38, 46): // 13.8% probability
-                betLine[spin] = "../images/fishbone.png";
+                betLine[spin] = "../slotmachine/images/fishbone.png";
                 bananas++;
                 break;
             case checkRange(outCome[spin], 47, 54): // 12.3% probability
-                betLine[spin] = "../images/skull.png";
+                betLine[spin] = "../slotmachine/images/skull.png";
                 oranges++;
                 break;
             case checkRange(outCome[spin], 55, 59): //  7.7% probability
-                betLine[spin] = "../images/bunny.png";
+                betLine[spin] = "../slotmachine/images/bunny.png";
                 cherries++;
                 break;
             case checkRange(outCome[spin], 60, 62): //  4.6% probability
-                betLine[spin] = "../images/shrine.png";
+                betLine[spin] = "../slotmachine/images/shrine.png";
                 bars++;
                 break;
             case checkRange(outCome[spin], 63, 64): //  3.1% probability
-                betLine[spin] = "../images/bell.png";
+                betLine[spin] = "../slotmachine/images/bell.png";
                 bells++;
                 break;
             case checkRange(outCome[spin], 65, 65): //  1.5% probability
-                betLine[spin] = "../images/bomb.png";
+                betLine[spin] = "../slotmachine/images/bomb.png";
                 sevens++;
                 break;
         }

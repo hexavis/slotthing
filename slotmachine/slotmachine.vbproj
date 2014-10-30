@@ -105,8 +105,8 @@
     <Content Include="images\shrine.png" />
     <Content Include="images\skull.png" />
     <Content Include="images\SPINn.png" />
+    <Content Include="images\spinReel.png" />
     <Content Include="images\spinS.png" />
-    <Content Include="js\easeljs-0.7.1.min.js" />
     <Content Include="js\main.js" />
     <Content Include="main.html" />
     <Content Include="Web.config" />
