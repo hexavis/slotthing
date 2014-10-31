@@ -74,7 +74,9 @@ function init() {
         stage = new createjs.Stage(canvas); //set the stage to be the canvas
         stage.enableMouseOver(); //Enable mouse over to allow functionality
         preLoad = new createjs.LoadQueue(false);
-        var images = 
+        preLoad.on("fileload", loadFiles, this); //Called when file loads
+        preLoad.on("complete", completeFileLoad, this); //Called when file completes
+        preLoad.loadManifest( 
                     [{ src: "../slotmachine/images/10betN.png" },
                      { src: "../slotmachine/images/10betS.png" },
                      { src: "../slotmachine/images/15betN.png" },
@@ -99,11 +101,7 @@ function init() {
                      { src: "../slotmachine/images/shrine.png" },
                      { src: "../slotmachine/images/skull.png" },
                      //main
-                    { src: "../slotmachine/images/mainSlot.png" }];//setup preload images at the start for the slot machine
-        preLoad.on("fileload", loadFiles, this); //Called when file loads
-        preLoad.on("complete", completeFileLoad, this); //Called when file completes
-        //can use preloader to create a loading bar 
-        preLoad.loadManifest(images); //Load the images
+                    { src: "../slotmachine/images/mainSlot.png" }]);//setup preload images at the start for the slot machine
     }
 
     function loadFiles(event) {
